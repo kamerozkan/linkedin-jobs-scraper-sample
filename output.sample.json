@@ -1,0 +1,40 @@
+[
+  {
+    "jobId": "4125896321",
+    "title": "Staff Software Engineer, Platform Infrastructure",
+    "companyName": "GitHub",
+    "companyUrl": "https://www.linkedin.com/company/github",
+    "companyId": "1418841",
+    "location": "San Francisco, CA (Remote)",
+    "jobUrl": "https://www.linkedin.com/jobs/view/4125896321",
+    "postedAt": "2026-09-04",
+    "postedTimeAgo": "1 day ago",
+    "applicantCount": 42,
+    "employmentType": "Full-time",
+    "seniorityLevel": "Mid-Senior level",
+    "jobFunction": "Engineering and Information Technology",
+    "industries": "Software Development",
+    "descriptionText": "As a Staff Software Engineer on Platform Infrastructure, you will design and scale the next generation of cloud developer tools...",
+    "detailStatus": "available",
+    "scrapedAt": "2026-09-05T08:00:15.120Z"
+  },
+  {
+    "jobId": "4125896322",
+    "title": "Senior Solutions Architect",
+    "companyName": "MongoDB",
+    "companyUrl": "https://www.linkedin.com/company/mongodb-inc",
+    "companyId": "783611",
+    "location": "New York, NY (Hybrid)",
+    "jobUrl": "https://www.linkedin.com/jobs/view/4125896322",
+    "postedAt": "2026-09-05",
+    "postedTimeAgo": "4 hours ago",
+    "applicantCount": 11,
+    "employmentType": "Full-time",
+    "seniorityLevel": "Mid-Senior level",
+    "jobFunction": "Consulting and Engineering",
+    "industries": "Database and Cloud Computing",
+    "descriptionText": "MongoDB is looking for a Senior Solutions Architect to partner with enterprise engineering leaders...",
+    "detailStatus": "available",
+    "scrapedAt": "2026-09-05T08:00:18.430Z"
+  }
+]
