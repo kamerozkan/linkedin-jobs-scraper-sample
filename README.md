@@ -8,6 +8,69 @@ Collect public LinkedIn jobs by keyword and location without a LinkedIn login. T
 
 The output includes title, company, location, posting date and full public description. It excludes recruiter profiles, applicant identities, emails and phone numbers. Missing source fields remain null.
 
+## Deliver only new jobs
+
+The September 30 owner integration used two genuine cloud runs of the same capped Berlin search, with 10 complete job rows each. The first local batch delivered 10 new jobs; the second delivered zero new jobs and retained all 10 seen identities. The second run's initial export stopped on a count disagreement; GET-only resumption of that same completed run passed the checks and exported the ready batch. No third scrape was started for recovery. [Source IDs, caps and validation boundaries](workflow-verification-2026-09-30.json), [the input](workflow-input.json) and [observed identities without full descriptions](workflow-observed-identities.json).
+
+Release `0.1.4` changes only the Actor README and was checked by the second cloud run. Local filtering does not refund either run's collection charges: both source runs returned 10 billable job rows. The collector keeps `newJobsOnly:false` because this consumer owns its history; the separate saved Task's native `newJobsOnly` feature is another option when you want Actor-managed history. These owner tests are not customer revenue or full-market evidence.
+
+[deliver_jobs.py](deliver_jobs.py) turns actual completed-run datasets into a local incremental JSON/CSV feed. It needs Python 3.11 or later on macOS or Linux and uses only the standard library. You can process an already downloaded dataset without a token or another paid run.
+
+Export the dataset as a JSON array and save the actual source run JSON and its `OUTPUT` record. Use the same watchlist label and SQLite state for both observations:
+
+```bash
+python3 deliver_jobs.py \
+  --dataset-file private-snapshots/first/rows.json \
+  --run-file private-snapshots/first/run.json \
+  --output-file private-snapshots/first/OUTPUT.json \
+  --watchlist berlin-software-engineer \
+  --state .delivery/seen.sqlite --output-dir .delivery/batches
+
+python3 deliver_jobs.py \
+  --dataset-file private-snapshots/second/rows.json \
+  --run-file private-snapshots/second/run.json \
+  --output-file private-snapshots/second/OUTPUT.json \
+  --watchlist berlin-software-engineer \
+  --state .delivery/seen.sqlite --output-dir .delivery/batches
+```
+
+The `private-snapshots` paths above are your downloaded files, not bundled example datasets. Source run, dataset and build IDs come from `run.json`; the script never labels a local replay as another cloud run. It requires source platform status `SUCCEEDED`, rejects a failed `OUTPUT` or a snapshot with a mismatched declared row count, and records capped or incomplete search coverage separately. A useful 10-row sample with `complete:false` and `stopReason:limit_reached` does not prove complete market coverage.
+
+Every new delivery batch has a stable `batch-<id>` directory with `new-jobs.json`, `new-jobs.csv`, `updated-jobs.json`, `updated-jobs.csv` and `metadata.json`. Only consume directories containing `READY`. Metadata includes source run/dataset/build, observed time, source row hash, event charge limit returned by the API, download/count checks, rejection counts and artifact hashes. `reportedUsageTotalUsd` preserves the API field; it is not an estimated price, an invoice or customer revenue.
+
+New means first observed in that watchlist's local state. Numeric `id` and canonical LinkedIn job URLs resolve to the same identity, including URL tracking-parameter variations. An identical dataset processed again delivers zero new jobs. Missing identities, failed rows, unavailable details, empty descriptions marked complete and conflicting duplicate observations are excluded without being added to seen history. A genuinely empty successful dataset exports empty files and does not remove prior jobs. An absent job is never inferred to be closed.
+
+Use `--include-updates` from the start if you also need observed content changes in `updated-jobs.*`. Changes to title, company, location, posting date, descriptions, employment/seniority, salary, official apply URL, job status or detail status count as updates to an existing identity. Source timestamps, relative posting text, applicant counts and Actor `isNew` flags do not. Older observations cannot roll back newer content. Updates observed while the flag is disabled are recorded in state but are not backfilled when it is later enabled.
+
+CSV text cells that could be interpreted as spreadsheet formulas receive an apostrophe prefix, including leading whitespace/control-character cases. JSON retains the actual source records. Local locking, durable prepared batches, atomic directory publication and SQLite transactions recover interrupted exports before advancing seen state. A retry completes the same prepared batch and keeps its ID; downstream consumers should also remember batch IDs. This local workflow does not guarantee exactly-once delivery to an external service.
+
+To explicitly start one new cloud run, set `APIFY_TOKEN` in your existing environment and use:
+
+```bash
+python3 deliver_jobs.py --live-input input.sample.json \
+  --watchlist berlin-software-engineer --state .delivery/seen.sqlite \
+  --output-dir .delivery/batches --max-total-charge-usd 0.05 \
+  --timeout-secs 300 --build 0.1.3
+```
+
+Live mode uses 512 MB, the requested server timeout and `maxTotalChargeUsd`, checks the returned limits, and downloads only after the run succeeds. Its requests follow the official [Run Actor API](https://docs.apify.com/api/v2/actors-runs-post) and [dataset items API](https://docs.apify.com/api/v2/dataset-items-get). It rejects `verifyApplyLinks:true` and `newJobsOnly:true`: this consumer owns incremental history. The token is sent only in the Authorization header to `https://api.apify.com`, redirects are refused, and request bodies or private error details are not logged. GET requests have bounded retries; run creation is attempted once because retrying an uncertain POST could create another charged run. Check Console after an uncertain creation or polling failure. Rerunning `--live-input` starts another potentially billable run; offline mode never starts one.
+
+If a run already exists, resume its download/export without starting another Actor. Replace `RUN_ID_FROM_CONSOLE` with that completed run's ID, keep `APIFY_TOKEN` in your environment, and reuse the same local state:
+
+```bash
+python3 deliver_jobs.py --run-id RUN_ID_FROM_CONSOLE \
+  --watchlist berlin-software-engineer --state .delivery/seen.sqlite \
+  --output-dir .delivery/batches
+```
+
+This mode uses GET only and labels provenance `existing_cloud_run`. It preserves the original run's saved build, time and charge limits; it does not change them. Both API modes read `OUTPUT.rowsEmitted` before downloading. Fresh dataset metadata can temporarily report zero while actual items exist, so `datasetMetadataItemCount` is informational. The exported `datasetItemCount` is the actual downloaded count checked against `OUTPUT`. Each page has at most three consistency attempts, and a final probe must contain no extra rows. A remaining mismatch stops delivery without advancing seen state. Resume the known run after a download/export interruption instead of starting another paid run.
+
+A reasonable starting cadence is one scheduled daily collection for a capped watchlist, followed by this local export step. Reuse the same state and watchlist, consume only ready batches and inspect source warnings and rejection counts. No schedule, webhook, email delivery or paid external destination is configured by these examples. Keep a backup of SQLite state and local artifacts; deleting the state intentionally makes observed jobs new again.
+
+On September 30, 2026, two owner cloud runs of the same capped Berlin search returned 10 accepted rows each: build `0.1.3` first, then build `0.1.4`. Using the same local SQLite history, the first delivery exported 10 new jobs; the second exported zero new jobs and counted 10 unchanged jobs, with no changed or rejected rows. The second run was downloaded through GET-only resumption of its existing run ID. Both searches stopped at their configured limit with `complete:false`. This verifies overlapping-run deduplication for those observations; it does not establish complete coverage, newly posted market activity, continuous source availability or delivery to an external destination.
+
+Run the local verification suite with `python3 -m unittest -v test_deliver_jobs.py`. All 18 tests passed on September 30, 2026. Its synthetic fixtures test duplicate/replay handling, stale updates, transaction/export recovery, invalid rows, CSV protection, metadata lag, short-page failures and GET-only resumption. They are separate from the two actual cloud observations and are not live source availability evidence. Existing public input/output examples and schemas are unchanged.
+
 ## Ready to run examples
 
 | Workflow | Store example | Exact input |

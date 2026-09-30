@@ -1,0 +1,50 @@
+{
+  "verifiedAt": "2026-09-30T21:25:17.452Z",
+  "firstSource": {
+    "id": "03ScFqPhZjEpBvyMz",
+    "buildId": "K8LxIwp2rMaYzqzg8",
+    "buildNumber": "0.1.3",
+    "startedAt": "2026-09-30T21:09:12.239Z",
+    "finishedAt": "2026-09-30T21:09:20.748Z",
+    "chargedEventCounts": {
+      "job-result": 10,
+      "apify-actor-start": 1
+    }
+  },
+  "secondSource": {
+    "id": "6fzmTd1FZQ8HHHelE",
+    "buildId": "3TBMvfrSe4DvbgOh3",
+    "buildNumber": "0.1.4",
+    "startedAt": "2026-09-30T21:24:56.654Z",
+    "finishedAt": "2026-09-30T21:25:17.452Z",
+    "chargedEventCounts": {
+      "job-result": 10,
+      "apify-actor-start": 1
+    }
+  },
+  "input": "workflow-input.json",
+  "watchlist": "berlin-software-engineer",
+  "firstInputRows": 10,
+  "firstNewDeliveredRows": 10,
+  "secondInputRows": 10,
+  "secondNewDeliveredRows": 0,
+  "secondUnchangedRows": 10,
+  "secondChangedRows": 0,
+  "secondRejectedReasons": {},
+  "persistentSeenIdentities": 10,
+  "readyBatches": 2,
+  "resumeMode": "existing_cloud_run",
+  "resumeStartsAnotherActor": false,
+  "initialLiveDownloadCountCheckRejected": true,
+  "initialFailureCauseConfirmed": false,
+  "applicationCountAuthority": "OUTPUT.rowsEmitted plus exact dataset pages and trailing empty probe",
+  "runtimeAndSchemasUnchanged": true,
+  "readmeOnlyActorRelease": "0.1.4",
+  "spendingCapPerCloudRunUsd": 0.05,
+  "timeoutPerCloudRunSecs": 300,
+  "localFilteringChangesPriorCollectionCharges": false,
+  "unitTestsPassed": 18,
+  "ownerRunsAreCustomerRevenue": false,
+  "closureInference": false,
+  "scope": "Two capped10-row observations of the same public search; second export yielded no new jobs. This does not prove complete coverage, a newly appearing live job or third-party delivery."
+}

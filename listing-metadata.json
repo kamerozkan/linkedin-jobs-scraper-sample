@@ -11,5 +11,11 @@
   "changeScope": "listing metadata and sample documentation only",
   "runtimeChanged": false,
   "schemasChanged": false,
-  "examplesRegenerated": false
+  "examplesRegenerated": false,
+  "sampleWorkflow": {
+    "name": "incremental-local-job-feed",
+    "entrypoint": "deliver_jobs.py",
+    "evidence": "workflow-verification-2026-09-30.json",
+    "readmeOnlyActorBuild": "0.1.4"
+  }
 }
