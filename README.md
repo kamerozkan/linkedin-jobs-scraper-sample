@@ -1,134 +1,84 @@
-# LinkedIn Jobs Scraper API & Dataset Sample (No Login)
+# LinkedIn Jobs Scraper examples
 
-[![Apify Actor](https://img.shields.io/badge/Apify-Actor-blue?logo=apify)](https://apify.com/kamerozkan/linkedin-jobs-scraper)
-[![Pricing](https://img.shields.io/badge/Price-%241.00%20%2F%201k%20jobs-brightgreen)](https://apify.com/kamerozkan/linkedin-jobs-scraper)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+Collect public LinkedIn jobs by keyword and location without a LinkedIn login. These examples use the current contracts of the [live Actor](https://apify.com/kamerozkan/linkedin-jobs-scraper), build `0.1.3`, verified on September 30, 2026.
 
-Runnable Python and Node.js examples, sanitized JSON outputs, and input schema for the [LinkedIn Jobs Scraper Apify Actor](https://apify.com/kamerozkan/linkedin-jobs-scraper).
+The output includes title, company, location, posting date and full public description. It excludes recruiter profiles, applicant identities, emails and phone numbers. Missing source fields remain null.
 
-Scrape public LinkedIn job postings by keyword, location, company, and seniority without login or cookies.
+## Ready to run examples
 
----
+| Workflow | Store example | Exact input |
+| --- | --- | --- |
+| Repeat Berlin engineering search | [Collect new Berlin jobs](https://apify.com/kamerozkan/linkedin-jobs-scraper/examples/collect-new-software-engineering-jobs-in-berlin) | [Berlin input](examples/berlin-input.json) |
+| London recruitment research | [Export London analyst jobs](https://apify.com/kamerozkan/linkedin-jobs-scraper/examples/export-data-analyst-jobs-in-london) | [London input](examples/london-input.json) |
+| US hiring market sample | [Research US cybersecurity hiring](https://apify.com/kamerozkan/linkedin-jobs-scraper/examples/research-cybersecurity-hiring-in-the-united-states) | [US input](examples/us-input.json) |
 
-## Key Features
+Each starter is capped at 20 jobs. Duplicate the task into your account, customize its keywords and locations, then adjust the result and spending caps. The published examples do not automatically create a schedule.
 
-- **No login, account, or session cookies required:** Scrapes public search and unauthenticated detail endpoints.
-- **Fair pricing:** **$1.00 per 1,000 jobs** ($0.001 per result; 50% cheaper than market leaders).
-- **Free unavailable rows:** If a job's detail page cannot be retrieved due to upstream deletion, it is marked `detailStatus: "unavailable"` and is **100% free**.
-- **Automatic filter workaround:** In August 2026, LinkedIn quietly stopped respecting guest query parameters (`f_JT`, `f_WT`, `f_E`). This Actor dynamically compiles user filters into strict boolean query syntax `(Role AND Remote)` in the keyword field, restoring 95%+ accurate remote and job-type filtering.
-- **`newJobsOnly` mode:** Only emit jobs posted within the last 24 hours (`f_TPR=r86400`) for clean scheduled daily monitoring.
-- **Isolated proxy sessions:** Each search page and detail fetch runs under dedicated datacenter proxy sessions with automatic 3x retries.
+## Python and Node.js
 
----
-
-## Quickstart (Python)
-
-Run the scraper using the official `apify-client` Python SDK:
+Use Python 3.11 or later with the official Python client 3.x, or Node.js with the official JavaScript client. Set `APIFY_TOKEN` in your environment:
 
 ```bash
-pip install apify-client
+pip install -r requirements.txt
+python run_scraper.py
+python run_scraper.py examples/london-input.json
 ```
-
-```python
-from apify_client import ApifyClient
-
-# Initialize with your Apify API token
-client = ApifyClient("YOUR_APIFY_TOKEN")
-
-# Define search parameters
-run_input = {
-    "keywords": "AI Engineer",
-    "location": "United States",
-    "maxJobs": 50,
-    "sortBy": "date",
-    "remote": "remote_only",
-    "newJobsOnly": True
-}
-
-# Run the Actor and fetch results
-run = client.actor("kamerozkan/linkedin-jobs-scraper").call(run_input=run_input)
-
-for item in client.dataset(run["defaultDatasetId"]).iterate_items():
-    print(f"[{item.get('postedAt')}] {item.get('title')} at {item.get('companyName')} ({item.get('location')})")
-    print(f"  URL: {item.get('jobUrl')}")
-    print(f"  Applicants: {item.get('applicantCount', 'N/A')}")
-```
-
----
-
-## Quickstart (Node.js)
 
 ```bash
-npm install apify-client
+npm install
+node run_scraper.mjs
+node run_scraper.mjs examples/us-input.json
 ```
 
-```javascript
-import { ApifyClient } from 'apify-client';
-
-const client = new ApifyClient({
-    token: 'YOUR_APIFY_TOKEN',
-});
-
-const run = await client.actor('kamerozkan/linkedin-jobs-scraper').call({
-    keywords: 'Staff Software Engineer',
-    location: 'Germany',
-    maxJobs: 25,
-    sortBy: 'date',
-});
-
-const { items } = await client.dataset(run.defaultDatasetId).listItems();
-console.log(`Fetched ${items.length} jobs:`);
-for (const job of items) {
-    console.log(`- ${job.title} @ ${job.companyName} (${job.location}) -> ${job.jobUrl}`);
-}
-```
-
----
-
-## Sample Output Record
+Both scripts default to [input.sample.json](input.sample.json), use a $0.50 maximum charge and a 300-second timeout, and print returned job URLs. They never print your token. Set optional `APIFY_BUILD` to a specific build number when your integration needs a pinned release.
 
 ```json
 {
-  "jobId": "4125896321",
-  "title": "Staff Software Engineer, Platform Infrastructure",
-  "companyName": "GitHub",
-  "companyUrl": "https://www.linkedin.com/company/github",
-  "companyId": "1418841",
-  "location": "San Francisco, CA (Remote)",
-  "jobUrl": "https://www.linkedin.com/jobs/view/4125896321",
-  "postedAt": "2026-09-04",
-  "postedTimeAgo": "1 day ago",
-  "applicantCount": 42,
-  "employmentType": "Full-time",
-  "seniorityLevel": "Mid-Senior level",
-  "jobFunction": "Engineering and Information Technology",
-  "industries": "Software Development",
-  "descriptionText": "As a Staff Software Engineer on Platform Infrastructure, you will design and scale...",
-  "descriptionHtml": "<div><p>As a Staff Software Engineer...</p></div>",
-  "detailStatus": "available",
-  "scrapedAt": "2026-09-05T08:00:15.120Z"
+  "keywords": ["software engineer"],
+  "locations": ["Berlin, Germany"],
+  "datePosted": "pastWeek",
+  "sortBy": "date",
+  "maxJobsPerSearch": 20,
+  "includeJobDetails": true,
+  "newJobsOnly": false,
+  "verifyApplyLinks": false
 }
 ```
 
----
+## Current input contract
 
-## Input Parameters
+[input.schema.json](input.schema.json) is the deployed Actor input schema.
 
-| Parameter | Type | Default | Description |
-| --- | --- | --- | --- |
-| `keywords` | String | *Required* | Job title, skill, or company (e.g. `"Python Developer"`). |
-| `location` | String | `""` | Country, state, city, or postal code. |
-| `maxJobs` | Integer | `50` | Maximum job postings to collect (up to 5,000). |
-| `sortBy` | Enum | `"date"` | Sort by `"date"` or `"relevance"`. |
-| `jobType` | Array | `[]` | `["full_time", "contract", "part_time", "internship"]`. |
-| `remote` | Enum | `"any"` | `"any"`, `"remote_only"`, `"on_site"`, `"hybrid"`. |
-| `experienceLevel` | Array | `[]` | `["entry_level", "associate", "mid_senior", "director"]`. |
-| `newJobsOnly` | Boolean | `false` | Restrict search to jobs posted in the last 24 hours. |
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `keywords` | String array | Up to 20 terms |
+| `locations` | String array | Up to 20 locations; empty means worldwide |
+| `searchUrls` | String array | Up to 20 public LinkedIn search URLs |
+| `datePosted` | String | `anyTime`, `past24Hours`, `pastWeek`, `pastMonth` |
+| `maxJobsPerSearch` | Integer | 10 to 1,000 results per search |
+| `includeJobDetails` | Boolean | Fetch public details, enabled by default |
+| `newJobsOnly` | Boolean | Suppress IDs seen in earlier runs of the same watchlist |
+| `stateNamespace` | String | `auto` isolates each saved Task's history |
+| `verifyApplyLinks` | Boolean | Optional separate paid verification Actor; disabled here |
 
----
+`newJobsOnly` does not set the posting-date filter. For daily alerts, choose `datePosted: "past24Hours"` and `sortBy: "date"` separately, save an Apify Task and schedule it. An empty later run can mean there are no unseen jobs.
 
-## Links
+Workplace type, employment type and seniority selections are search-text hints in the current implementation, not exact filters. Inspect returned structured fields when those conditions matter. LinkedIn can rank or geo-resolve a broad search differently between sessions.
 
-- **Live Apify Actor:** [https://apify.com/kamerozkan/linkedin-jobs-scraper](https://apify.com/kamerozkan/linkedin-jobs-scraper)
-- **Author Profile:** [https://apify.com/kamerozkan](https://apify.com/kamerozkan)
-- **Report Issues / Feedback:** [GitHub Issues](https://github.com/kamerozkan/linkedin-jobs-scraper-sample/issues)
+## Output and billing
+
+[output.sample.json](output.sample.json) contains shortened records from September 30 owner tests. [dataset.schema.json](dataset.schema.json) is the current record contract.
+
+Canonical keys include `id`, `url`, `applicantsCount` and `detailStatus`. `detailStatus` is `complete`, `not_requested` or `unavailable`. Descriptions are available as `descriptionText` and `descriptionHtml` when requested and publicly readable.
+
+The FREE discount tier costs $0.001 per delivered job plus $0.005 per GB of memory, with a minimum of one start event. Paid plans have lower job rates. A 20-job run at 512 MB is approximately $0.025 at FREE or $0.023 at BRONZE. Unavailable detail rows are not charged. Optional apply-link verification adds separate Actor charges. Check the live pricing tab for current rates.
+
+## Verification and limits
+
+On September 30, all three saved example inputs completed on build `0.1.2`, each returning 20 unique jobs with 20 nonempty descriptions. [verification.json](verification.json) records the run IDs and scoped checks. Release `0.1.3` changes only the Store README, retaining the same input and output contracts. A further London-input check returned 20 unique jobs and 20 nonempty descriptions on that build. The Python client 3.2.1 and JavaScript client 2.25.0 scripts were also exercised against cloud runs; see [release-verification.json](release-verification.json). These are owner tests, not customer testimonials or guarantees for every market. A capped sample does not establish complete market coverage.
+
+Read [DATA_NOTICE.md](DATA_NOTICE.md) before redistributing source content. This repository is an integration sample, not an official LinkedIn API or a licensed bulk dataset.
+
+## Build a recruitment data pipeline
+
+Start with this Actor to collect postings. If you need official application URLs, pass its dataset to the [apply-link verifier](https://apify.com/kamerozkan/linkedin-job-apply-link-verifier). For recurring changes on a fixed list of employers, use [Hiring Signals](https://apify.com/kamerozkan/linkedin-hiring-signals). Each Actor has separate billing and quality checks. Verify the returned evidence before publishing jobs to your board.

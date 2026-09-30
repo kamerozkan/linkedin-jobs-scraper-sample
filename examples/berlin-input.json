@@ -9,7 +9,7 @@
   "sortBy": "date",
   "maxJobsPerSearch": 20,
   "includeJobDetails": true,
-  "newJobsOnly": false,
+  "newJobsOnly": true,
   "stateNamespace": "auto",
   "verifyApplyLinks": false
 }

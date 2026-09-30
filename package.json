@@ -1,0 +1,14 @@
+{
+  "name": "linkedin-jobs-scraper-sample",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node run_scraper.mjs"
+  },
+  "dependencies": {
+    "apify-client": "^2.25.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

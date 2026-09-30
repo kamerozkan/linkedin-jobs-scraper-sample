@@ -1,0 +1,269 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "title": "Job ID"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "title": "Job URL"
+    },
+    "title": {
+      "type": "string",
+      "title": "Title"
+    },
+    "companyName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Company"
+    },
+    "companyUrl": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Company URL"
+    },
+    "companyLogo": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Company logo"
+    },
+    "location": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Location"
+    },
+    "postedAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Posted"
+    },
+    "postedText": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Posted (relative)"
+    },
+    "applicantsCount": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "title": "Applicants"
+    },
+    "applicantsText": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Applicants (text)"
+    },
+    "salaryText": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Salary"
+    },
+    "benefits": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Benefits"
+    },
+    "seniorityLevel": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Seniority level"
+    },
+    "employmentType": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Employment type"
+    },
+    "jobFunction": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Job function"
+    },
+    "industries": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Industries"
+    },
+    "descriptionText": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Description"
+    },
+    "descriptionHtml": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Description (HTML)"
+    },
+    "detailStatus": {
+      "type": "string",
+      "enum": [
+        "complete",
+        "unavailable",
+        "not_requested"
+      ],
+      "title": "Detail status"
+    },
+    "searchKeywords": {
+      "type": "string",
+      "title": "Search keywords"
+    },
+    "searchLocation": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Search location"
+    },
+    "searchUrl": {
+      "type": "string",
+      "title": "Search URL"
+    },
+    "isNew": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "title": "New"
+    },
+    "firstSeenAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "First seen"
+    },
+    "verificationStatus": {
+      "type": "string",
+      "title": "Verification status"
+    },
+    "officialApplyUrl": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Official apply URL"
+    },
+    "applyMethod": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Apply method"
+    },
+    "jobStatus": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Job status"
+    },
+    "ghostJobRisk": {
+      "type": "string",
+      "enum": [
+        "low",
+        "review",
+        "high",
+        "unknown"
+      ],
+      "title": "Ghost-job risk"
+    },
+    "verificationConfidence": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "title": "Verification confidence"
+    },
+    "verifiedAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Verified at"
+    },
+    "verificationEvidence": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Verification evidence"
+    },
+    "safeToPublish": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "title": "Safe to publish"
+    },
+    "reviewRequired": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "title": "Review required"
+    },
+    "sourceProvider": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "ATS provider"
+    },
+    "companyWebsite": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "title": "Company website"
+    },
+    "scrapedAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Scraped at"
+    }
+  },
+  "required": [
+    "id",
+    "url",
+    "title",
+    "detailStatus",
+    "searchKeywords",
+    "searchUrl",
+    "firstSeenAt",
+    "verificationStatus",
+    "ghostJobRisk",
+    "verificationEvidence",
+    "scrapedAt"
+  ]
+}

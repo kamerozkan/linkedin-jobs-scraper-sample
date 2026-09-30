@@ -1,0 +1,15 @@
+{
+  "verifiedAt": "2026-09-30",
+  "buildNumber": "0.1.3",
+  "buildId": "K8LxIwp2rMaYzqzg8",
+  "runId": "F4jOSI008JVoYBOrF",
+  "status": "SUCCEEDED",
+  "rows": 20,
+  "uniqueRows": 20,
+  "nonemptyDescriptions": 20,
+  "change": "README only; source, input and dataset contracts unchanged.",
+  "clientChecks": {
+    "python": "apify-client 3.2.1, build 0.1.2, k2dAqxkzCInbjt5om: 20 returned jobs",
+    "javascript": "apify-client 2.25.0, build 0.1.3, F4jOSI008JVoYBOrF: 20 returned jobs"
+  }
+}

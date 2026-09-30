@@ -1,0 +1,38 @@
+[
+  {
+    "title": "Collect New Software Engineering Jobs in Berlin",
+    "url": "https://apify.com/kamerozkan/linkedin-jobs-scraper/examples/collect-new-software-engineering-jobs-in-berlin",
+    "publishedAt": "2026-09-30T14:33:58.824Z",
+    "runId": "dF827FiTOLie3f2Eq",
+    "build": "0.1.2",
+    "status": "SUCCEEDED",
+    "rows": 20,
+    "uniqueRows": 20,
+    "nonemptyDescriptions": 20,
+    "durationMillis": 14905
+  },
+  {
+    "title": "Export Data Analyst Jobs in London",
+    "url": "https://apify.com/kamerozkan/linkedin-jobs-scraper/examples/export-data-analyst-jobs-in-london",
+    "publishedAt": "2026-09-30T14:34:00.180Z",
+    "runId": "Crdzl9cPwJU2jKpq8",
+    "build": "0.1.2",
+    "status": "SUCCEEDED",
+    "rows": 20,
+    "uniqueRows": 20,
+    "nonemptyDescriptions": 20,
+    "durationMillis": 16035
+  },
+  {
+    "title": "Research Cybersecurity Hiring in the United States",
+    "url": "https://apify.com/kamerozkan/linkedin-jobs-scraper/examples/research-cybersecurity-hiring-in-the-united-states",
+    "publishedAt": "2026-09-30T14:34:01.356Z",
+    "runId": "UUJpUZWnM08dUcN4P",
+    "build": "0.1.2",
+    "status": "SUCCEEDED",
+    "rows": 20,
+    "uniqueRows": 20,
+    "nonemptyDescriptions": 20,
+    "durationMillis": 40281
+  }
+]

@@ -1,0 +1,249 @@
+{
+    "title": "LinkedIn Jobs Scraper input",
+    "description": "Search public LinkedIn job postings by keyword and location, or paste LinkedIn jobs search URLs. No login or cookies. Every job row includes the public job details unless you turn them off.",
+    "type": "object",
+    "schemaVersion": 1,
+    "additionalProperties": false,
+    "properties": {
+        "keywords": {
+            "title": "Job titles or keywords",
+            "description": "One search per keyword, for example \"software engineer\" or \"registered nurse\". LinkedIn boolean syntax such as \"data (analyst OR scientist)\" works. Leave empty when you only use search URLs or company IDs.",
+            "type": "array",
+            "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+            },
+            "editor": "stringList",
+            "sectionCaption": "Search",
+            "prefill": [
+                "software engineer"
+            ],
+            "maxItems": 20
+        },
+        "locations": {
+            "title": "Locations",
+            "description": "City, region, or country as you would type it on LinkedIn, for example \"Berlin, Germany\", \"United States\", or \"London Area, United Kingdom\". Every keyword is searched in every location. Leave empty for a worldwide search.",
+            "type": "array",
+            "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+            },
+            "editor": "stringList",
+            "prefill": [
+                "Berlin, Germany"
+            ],
+            "maxItems": 20
+        },
+        "searchUrls": {
+            "title": "LinkedIn jobs search URLs (optional)",
+            "description": "Open https://www.linkedin.com/jobs/search/ in a private browser window, apply filters, and paste the address bar URL. Keywords, location, geoId, date posted, company, Easy Apply, under-10-applicants, and sort order are read from the URL.",
+            "type": "array",
+            "items": {
+                "type": "string",
+                "pattern": "^https?://([a-z0-9-]+\\.)*linkedin\\.com/jobs\\S*$"
+            },
+            "editor": "stringList",
+            "maxItems": 20
+        },
+        "datePosted": {
+            "title": "Date posted",
+            "description": "Only return jobs posted within this window. Use \"Past 24 hours\" for daily schedules.",
+            "type": "string",
+            "editor": "select",
+            "default": "anyTime",
+            "enum": [
+                "anyTime",
+                "past24Hours",
+                "pastWeek",
+                "pastMonth"
+            ],
+            "enumTitles": [
+                "Any time",
+                "Past 24 hours",
+                "Past week",
+                "Past month"
+            ],
+            "sectionCaption": "Filters"
+        },
+        "sortBy": {
+            "title": "Sort by",
+            "type": "string",
+            "editor": "select",
+            "default": "relevance",
+            "enum": [
+                "relevance",
+                "date"
+            ],
+            "enumTitles": [
+                "Most relevant",
+                "Most recent"
+            ],
+            "description": "Most relevant follows LinkedIn ranking; most recent orders by posting date and is the better choice for schedules and new-jobs-only mode."
+        },
+        "companyIds": {
+            "title": "Company IDs (optional)",
+            "description": "Numeric LinkedIn company IDs, for example 1441 for Google. Found as f_C in a LinkedIn jobs search URL. Restricts every search to these companies.",
+            "type": "array",
+            "items": {
+                "type": "string",
+                "pattern": "^[0-9]+$"
+            },
+            "editor": "stringList",
+            "maxItems": 50
+        },
+        "geoId": {
+            "title": "Geo ID (optional)",
+            "description": "LinkedIn numeric geoId for exact location targeting, found as geoId in a LinkedIn jobs search URL. Overrides the free-text locations.",
+            "type": "string",
+            "pattern": "^[0-9]*$",
+            "editor": "textfield"
+        },
+        "easyApplyOnly": {
+            "title": "Easy Apply only",
+            "type": "boolean",
+            "default": false,
+            "description": "Only return jobs that can be applied to with LinkedIn Easy Apply."
+        },
+        "under10Applicants": {
+            "title": "Under 10 applicants only",
+            "type": "boolean",
+            "default": false,
+            "description": "Only return jobs that LinkedIn marks as having fewer than 10 applicants."
+        },
+        "workplaceType": {
+            "title": "Workplace type",
+            "description": "Remote, hybrid, or on-site. LinkedIn stopped applying this as a public search filter in August 2026, so the selection is added to the search text instead; treat it as a strong hint, not a guarantee.",
+            "type": "array",
+            "editor": "select",
+            "items": {
+                "type": "string",
+                "enum": [
+                    "Remote",
+                    "Hybrid",
+                    "On-site"
+                ]
+            },
+            "uniqueItems": true
+        },
+        "jobType": {
+            "title": "Job type",
+            "description": "Added to the search text for the same reason as workplace type.",
+            "type": "array",
+            "editor": "select",
+            "items": {
+                "type": "string",
+                "enum": [
+                    "Full-time",
+                    "Part-time",
+                    "Contract",
+                    "Temporary",
+                    "Internship",
+                    "Volunteer",
+                    "Other"
+                ]
+            },
+            "uniqueItems": true
+        },
+        "experienceLevel": {
+            "title": "Experience level",
+            "description": "Added to the search text for the same reason as workplace type.",
+            "type": "array",
+            "editor": "select",
+            "items": {
+                "type": "string",
+                "enum": [
+                    "Internship",
+                    "Entry level",
+                    "Associate",
+                    "Mid-Senior level",
+                    "Director",
+                    "Executive"
+                ]
+            },
+            "uniqueItems": true
+        },
+        "maxJobsPerSearch": {
+            "title": "Maximum jobs per search",
+            "description": "Cost and time cap for each keyword and location combination. LinkedIn's public search never returns more than 1,000 jobs per search; split by city or narrow the date window for more.",
+            "type": "integer",
+            "default": 100,
+            "minimum": 10,
+            "maximum": 1000,
+            "sectionCaption": "Output"
+        },
+        "includeJobDetails": {
+            "title": "Include job details",
+            "description": "Fetch every job's public detail page: description, seniority level, employment type, job function, industries, applicants, and company logo. Turn off for a fast list of titles, companies, locations, and dates only.",
+            "type": "boolean",
+            "default": true
+        },
+        "newJobsOnly": {
+            "title": "New jobs only (skip jobs seen in earlier runs)",
+            "description": "Remembers every job ID per watchlist namespace and returns only jobs that were not seen before. Ideal for daily schedules: you pay only for new postings. The first run returns everything.",
+            "type": "boolean",
+            "default": false
+        },
+        "stateNamespace": {
+            "title": "Watchlist namespace",
+            "description": "Separates independent new-jobs-only histories. \"auto\" isolates each saved Task automatically; API callers should set a stable unique value per watchlist.",
+            "type": "string",
+            "default": "auto",
+            "minLength": 1,
+            "maxLength": 120,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "editor": "textfield"
+        },
+        "verifyApplyLinks": {
+            "title": "Verify official apply links and ghost-job risk",
+            "description": "Optional premium step. Sends the scraped jobs to the LinkedIn Job Apply Link Verifier Actor, which returns the official employer application URL, live status, confidence, and ghost-job risk into the same rows. Billed separately by that Actor.",
+            "type": "boolean",
+            "default": false,
+            "sectionCaption": "Official apply-link verification (optional)"
+        },
+        "maxJobsToVerify": {
+            "title": "Maximum jobs to verify",
+            "type": "integer",
+            "default": 100,
+            "minimum": 1,
+            "maximum": 500,
+            "description": "Cost guardrail for the optional apply-link verification in one run."
+        },
+        "verificationMaxTotalChargeUsd": {
+            "title": "Verification cost limit",
+            "description": "Maximum pay-per-event charge allowed for the verifier run.",
+            "type": "number",
+            "default": 1,
+            "minimum": 0.005,
+            "maximum": 100,
+            "unit": "USD"
+        },
+        "verifierActorId": {
+            "title": "Verifier Actor",
+            "type": "string",
+            "default": "kamerozkan/linkedin-job-apply-link-verifier",
+            "editor": "hidden",
+            "description": "Actor used for optional apply-link verification."
+        },
+        "maxConcurrency": {
+            "title": "Maximum concurrency",
+            "description": "Parallel job detail requests. Higher values are faster but raise the chance of LinkedIn rate limits; the Actor retries with fresh proxy sessions.",
+            "type": "integer",
+            "default": 5,
+            "minimum": 1,
+            "maximum": 10,
+            "sectionCaption": "Network"
+        },
+        "proxyConfiguration": {
+            "title": "Proxy configuration",
+            "description": "Apify Proxy is used by default and included in the price. Each search and each job detail request uses its own proxy session.",
+            "type": "object",
+            "editor": "proxy",
+            "default": {
+                "useApifyProxy": true
+            }
+        }
+    },
+    "required": []
+}
