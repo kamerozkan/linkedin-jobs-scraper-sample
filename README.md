@@ -1,4 +1,8 @@
-# LinkedIn Jobs Scraper examples
+# LinkedIn Jobs Scraper - Full Descriptions, No Login: Samples
+
+LinkedIn jobs scraper by keyword, location or company, without login. Export full public descriptions for job-board feeds, recruitment research and job alerts. Use new-jobs-only history and ready-to-run Berlin, London and US examples. From $1 per 1,000 jobs; optional apply-link checks cost extra.
+
+[Run LinkedIn Jobs Scraper - Full Descriptions, No Login on Apify](https://apify.com/kamerozkan/linkedin-jobs-scraper)
 
 Collect public LinkedIn jobs by keyword and location without a LinkedIn login. These examples use the current contracts of the [live Actor](https://apify.com/kamerozkan/linkedin-jobs-scraper), build `0.1.3`, verified on September 30, 2026.
 

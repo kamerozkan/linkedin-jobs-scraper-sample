@@ -1,0 +1,15 @@
+{
+  "id": "7K6PDmgKj6nvwwJPi",
+  "name": "linkedin-jobs-scraper",
+  "title": "LinkedIn Jobs Scraper - Full Descriptions, No Login",
+  "description": "LinkedIn jobs scraper by keyword, location or company, without login. Export full public descriptions for job-board feeds, recruitment research and job alerts. Use new-jobs-only history and ready-to-run Berlin, London and US examples. From $1 per 1,000 jobs; optional apply-link checks cost extra.",
+  "seoTitle": "LinkedIn Jobs Scraper - Full Descriptions, No Login",
+  "seoDescription": "Scrape public LinkedIn jobs by keyword, location or company without login. Export full descriptions and build job-board feeds with ready-to-run inputs.",
+  "isPublic": true,
+  "url": "https://apify.com/kamerozkan/linkedin-jobs-scraper",
+  "checkedAt": "2026-09-30",
+  "changeScope": "listing metadata and sample documentation only",
+  "runtimeChanged": false,
+  "schemasChanged": false,
+  "examplesRegenerated": false
+}
