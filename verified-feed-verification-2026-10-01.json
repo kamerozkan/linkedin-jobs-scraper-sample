@@ -1,0 +1,73 @@
+{
+  "currentCodeSha256": {
+    "test_verified_job_feed.py": "35c48358f89ae7498083bf72e2d3265c6745af220244ac097b643f6da4d18c4c",
+    "verified_job_feed.py": "55ef8325accf9bd5d742089ae58a6324d75d4f3f6fc5995aade6a6f43068087b"
+  },
+  "differentExistingVerifierRequestRejected": {
+    "buildNumber": "0.0.21",
+    "existingDatasetRows": 4,
+    "existingInputRows": 4,
+    "existingPublishableDecisions": 2,
+    "handoffOutputExists": false,
+    "inputFileSha256": "5b595349641b7cb2719a0c498d5f720ed49f1977dd1c79312f09efbeb624a246",
+    "reason": "Saved verifier input does not match this prepared request. Refusing to attach a different run.",
+    "result": "rejected_before_writing_handoff",
+    "rowsFileSha256": "a56bc7c4d377fb38d14401e8587d4f6386e031e80d63108d1bf5cd33e9992597",
+    "runFileSha256": "0274a7eda419f40979018dccdcdc35a4d538e918196a8805411027364dc0a9f6",
+    "runId": "C0quAeIt8R4A3OvZw",
+    "sourceFinishedAt": "2026-09-30T21:16:07.107Z",
+    "summaryFileSha256": "2e70b1e05fcdfc884bb14da137947e20b6c92a5979244ff285ba8dc70e89d4e2"
+  },
+  "evaluatedLocallyAt": "2026-10-01T10:17:00.089409+00:00",
+  "firstExistingJobsBatch": {
+    "deferredJobs": 0,
+    "heldSourceJobs": 0,
+    "preparedStatus": "PREPARED",
+    "selectedJobs": 10,
+    "sourceBatchId": "9e29ef4e4ef6447383202adcb59720b9",
+    "sourceBuildNumber": "0.1.3",
+    "sourceNewJobsSha256": "34752aafc988864f1b045b3c710032389e96ca5e713c0991225fe9dd4675afc1",
+    "sourceObservedAt": "2026-09-30T21:09:20.748000+00:00",
+    "sourceRunId": "03ScFqPhZjEpBvyMz",
+    "sourceSearchCoverage": [
+      {
+        "complete": false,
+        "stopReason": "limit_reached"
+      }
+    ]
+  },
+  "limitations": [
+    "The actual historical verifier used a different four-row request, including duplicate/invalid diagnostics; it is not relabeled as the ten-row prepared request.",
+    "No new matched end-to-end cloud verification or external customer delivery was performed.",
+    "Local preparation/merging does not refund earlier Actor charges or prove customer revenue."
+  ],
+  "networkRequestsMade": 0,
+  "newCloudRunStarted": false,
+  "realizedRevenueUsd": null,
+  "secondExistingJobsBatch": {
+    "newJobs": 0,
+    "preparedStatus": "SKIPPED_NO_NEW_JOBS",
+    "sourceBuildNumber": "0.1.4",
+    "sourceNewJobsSha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "sourceObservedAt": "2026-09-30T21:25:17.452000+00:00",
+    "sourceRunId": "6fzmTd1FZQ8HHHelE",
+    "verifierInputCreated": false
+  },
+  "selfContainedSyntheticDemo": {
+    "evaluationAsOf": "2026-09-30T13:00:00Z",
+    "heldJobs": 1,
+    "networkRequestsMade": 0,
+    "newCloudRunStarted": false,
+    "path": "examples/verified-feed-synthetic-demo",
+    "preparedJobs": 3,
+    "publishableJobs": 2,
+    "sourceAndDecisionsAreInvented": true,
+    "tokenRequired": false
+  },
+  "syntheticTests": {
+    "liveSourceCheck": false,
+    "passed": 29,
+    "scope": "Positive joins and held/error conditions are separately tested with explicit synthetic fixtures."
+  },
+  "verificationType": "offline_replay_of_existing_dated_owner_exports"
+}

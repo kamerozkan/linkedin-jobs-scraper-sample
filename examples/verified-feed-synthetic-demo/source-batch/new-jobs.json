@@ -1,0 +1,32 @@
+[
+  {
+    "companyName": "Synthetic test company",
+    "descriptionText": "Synthetic description retained in the local handoff.",
+    "detailStatus": "complete",
+    "id": "1000000001",
+    "location": "Synthetic test location",
+    "scrapedAt": "2026-09-30T12:00:00Z",
+    "title": "Synthetic test role",
+    "url": "https://www.linkedin.com/jobs/view/1000000001"
+  },
+  {
+    "companyName": "Synthetic test company",
+    "descriptionText": "Synthetic description retained in the local handoff.",
+    "detailStatus": "complete",
+    "id": "1000000002",
+    "location": "Synthetic test location",
+    "scrapedAt": "2026-09-30T12:00:00Z",
+    "title": "Synthetic test role",
+    "url": "https://www.linkedin.com/jobs/view/1000000002"
+  },
+  {
+    "companyName": "Synthetic test company",
+    "descriptionText": "Synthetic description retained in the local handoff.",
+    "detailStatus": "complete",
+    "id": "1000000003",
+    "location": "Synthetic test location",
+    "scrapedAt": "2026-09-30T12:00:00Z",
+    "title": "Synthetic test role",
+    "url": "https://www.linkedin.com/jobs/view/1000000003"
+  }
+]

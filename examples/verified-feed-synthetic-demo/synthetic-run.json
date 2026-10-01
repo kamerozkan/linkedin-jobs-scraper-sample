@@ -1,0 +1,13 @@
+{
+  "buildId": "SyntheticVerifierBuild0001",
+  "buildNumber": "0.0.22",
+  "chargedEventCounts": {
+    "verified-job": 3
+  },
+  "defaultDatasetId": "SyntheticVerifierDataset0001",
+  "exampleIsSynthetic": true,
+  "finishedAt": "2026-09-30T12:02:00Z",
+  "id": "SyntheticVerifier0001",
+  "startedAt": "2026-09-30T12:01:00Z",
+  "status": "SUCCEEDED"
+}

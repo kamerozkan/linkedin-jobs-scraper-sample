@@ -17,5 +17,18 @@
     "entrypoint": "deliver_jobs.py",
     "evidence": "workflow-verification-2026-09-30.json",
     "readmeOnlyActorBuild": "0.1.4"
+  },
+  "newJobVerificationWorkflow": {
+    "addedOn": "2026-10-01",
+    "helperRepository": "https://github.com/kamerozkan/linkedin-jobs-scraper-sample",
+    "helper": "verified_job_feed.py",
+    "mode": "offline prepare and merge",
+    "localTestsPassed": 29,
+    "bundledDemoIsSynthetic": true,
+    "matchedNewLiveEndToEndVerified": false,
+    "startsOrChargesActors": false,
+    "publishesExternally": false,
+    "actorRuntimeChanged": false,
+    "actorPricingChanged": false
   }
 }

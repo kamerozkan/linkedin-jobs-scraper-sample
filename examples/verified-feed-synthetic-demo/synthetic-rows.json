@@ -1,0 +1,59 @@
+[
+  {
+    "actionUrl": null,
+    "checkedAt": "2026-09-30T12:01:30Z",
+    "company": "Synthetic test company",
+    "confidence": 0.97,
+    "evidence": [
+      "synthetic_test_evidence"
+    ],
+    "jobId": "1000000003",
+    "linkedinUrl": "https://www.linkedin.com/jobs/view/1000000003",
+    "location": "Synthetic test location",
+    "reviewRequired": false,
+    "safeToPublish": false,
+    "sourceIndex": 2,
+    "sourceProvider": "synthetic_test_provider",
+    "status": "EXPIRED",
+    "title": "Synthetic test role",
+    "usefulClassification": true
+  },
+  {
+    "actionUrl": "https://www.linkedin.com/jobs/view/1000000002",
+    "checkedAt": "2026-09-30T12:01:30Z",
+    "company": "Synthetic test company",
+    "confidence": 0.97,
+    "evidence": [
+      "synthetic_test_evidence"
+    ],
+    "jobId": "1000000002",
+    "linkedinUrl": "https://www.linkedin.com/jobs/view/1000000002",
+    "location": "Synthetic test location",
+    "reviewRequired": false,
+    "safeToPublish": true,
+    "sourceIndex": 1,
+    "sourceProvider": "synthetic_test_provider",
+    "status": "LINKEDIN_EASY_APPLY",
+    "title": "Synthetic test role",
+    "usefulClassification": true
+  },
+  {
+    "actionUrl": "https://careers.synthetic-example.invalid/jobs/1000000001",
+    "checkedAt": "2026-09-30T12:01:30Z",
+    "company": "Synthetic test company",
+    "confidence": 0.97,
+    "evidence": [
+      "synthetic_test_evidence"
+    ],
+    "jobId": "1000000001",
+    "linkedinUrl": "https://www.linkedin.com/jobs/view/1000000001",
+    "location": "Synthetic test location",
+    "reviewRequired": false,
+    "safeToPublish": true,
+    "sourceIndex": 0,
+    "sourceProvider": "synthetic_test_provider",
+    "status": "ACTIVE",
+    "title": "Synthetic test role",
+    "usefulClassification": true
+  }
+]

@@ -1,0 +1,32 @@
+{
+  "autoDiscoverCompanyWebsite": true,
+  "includeVerificationReport": false,
+  "maxBridgePages": 0,
+  "maxCandidates": 1,
+  "maxItems": 3,
+  "maxSearchQueries": 1,
+  "rows": [
+    {
+      "companyName": "Synthetic test company",
+      "jobId": "1000000001",
+      "jobTitle": "Synthetic test role",
+      "jobUrl": "https://www.linkedin.com/jobs/view/1000000001",
+      "location": "Synthetic test location"
+    },
+    {
+      "companyName": "Synthetic test company",
+      "jobId": "1000000002",
+      "jobTitle": "Synthetic test role",
+      "jobUrl": "https://www.linkedin.com/jobs/view/1000000002",
+      "location": "Synthetic test location"
+    },
+    {
+      "companyName": "Synthetic test company",
+      "jobId": "1000000003",
+      "jobTitle": "Synthetic test role",
+      "jobUrl": "https://www.linkedin.com/jobs/view/1000000003",
+      "location": "Synthetic test location"
+    }
+  ],
+  "useReaderFallback": true
+}

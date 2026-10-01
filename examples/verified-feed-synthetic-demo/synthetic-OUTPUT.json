@@ -1,0 +1,14 @@
+{
+  "billing": {
+    "invalidOrDuplicateRowsCharged": false,
+    "payPerEventActive": true,
+    "unresolvedRowsCharged": false
+  },
+  "deliveredRows": 3,
+  "exampleIsSynthetic": true,
+  "requestedRows": 3,
+  "rows": 3,
+  "safeToPublishRows": 2,
+  "status": "SUCCEEDED",
+  "usefulClassifications": 3
+}

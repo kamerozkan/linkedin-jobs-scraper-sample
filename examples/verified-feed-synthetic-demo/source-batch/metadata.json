@@ -1,0 +1,43 @@
+{
+  "artifacts": {
+    "new-jobs.csv": {
+      "bytes": 1197,
+      "sha256": "31d462fe1698db920298f44986a361244597d4edfce3eb639198a9dc321ea332"
+    },
+    "new-jobs.json": {
+      "bytes": 1107,
+      "sha256": "6212459f8b82fa7e0d3474a2b8cb4e2e50f2b3ca6e12a0fcd551f9f59219a241"
+    },
+    "updated-jobs.csv": {
+      "bytes": 483,
+      "sha256": "0206a1847d61c66a41e100c4663fb030c529bd6d30423f558c99aea9d96284ff"
+    },
+    "updated-jobs.json": {
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    }
+  },
+  "batchId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "counts": {
+    "newJobs": 3
+  },
+  "exampleIsSynthetic": true,
+  "fixtureNotice": "Entirely invented offline fixture; no collection, customer, billing, or availability proof.",
+  "formatVersion": 1,
+  "source": {
+    "buildId": "SyntheticBuild0001",
+    "buildNumber": "0.1.4",
+    "datasetId": "SyntheticDataset0001",
+    "exampleIsSynthetic": true,
+    "observedAt": "2026-09-30T12:00:00Z",
+    "platformStatus": "SUCCEEDED",
+    "runId": "SyntheticRun0001",
+    "searchCoverage": [
+      {
+        "complete": false,
+        "stopReason": "limit_reached"
+      }
+    ]
+  },
+  "watchlist": "synthetic-test"
+}

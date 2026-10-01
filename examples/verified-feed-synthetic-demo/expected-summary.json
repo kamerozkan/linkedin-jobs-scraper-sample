@@ -1,0 +1,13 @@
+{
+  "evaluationAsOf": "2026-09-30T13:00:00Z",
+  "exampleIsSynthetic": true,
+  "handoffStatus": "HANDOFF_COMPLETE",
+  "heldJobs": 1,
+  "heldReason": "VERIFIER_EXPIRED",
+  "networkRequests": 0,
+  "newActorRuns": 0,
+  "prepareStatus": "PREPARED",
+  "preparedJobs": 3,
+  "publishableJobs": 2,
+  "realizedRevenueUsd": null
+}

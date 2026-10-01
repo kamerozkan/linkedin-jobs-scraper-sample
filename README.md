@@ -8,6 +8,58 @@ Collect public LinkedIn jobs by keyword and location without a LinkedIn login. T
 
 The output includes title, company, location, posting date and full public description. It excludes recruiter profiles, applicant identities, emails and phone numbers. Missing source fields remain null.
 
+## Verify only newly delivered jobs
+
+For job-board editors and recruitment teams, [verified_job_feed.py](verified_job_feed.py) connects this collector's incremental feed to the [Apply Link Verifier](https://apify.com/kamerozkan/linkedin-job-apply-link-verifier). It prepares only a READY batch's `new-jobs.json`, rather than sending the original collection dataset, including previously seen jobs, into another verification run. It then joins exported verification decisions back to the same job identities and produces separate publication and review files.
+
+The helper uses Python 3.11+ and the standard library. Both commands are entirely offline: they read local files, never use a token, never fetch URLs and never start or charge an Actor.
+
+### Try the free, synthetic demonstration
+
+The bundled fixture is completely invented. It demonstrates file handling and release decisions, not real job availability, source access, customer results or revenue. Do not submit its input to a paid Actor.
+
+```bash
+python3 verified_job_feed.py prepare \
+  --batch examples/verified-feed-synthetic-demo/source-batch \
+  --out .delivery/synthetic-verification-request
+
+python3 verified_job_feed.py merge \
+  --request .delivery/synthetic-verification-request \
+  --verifier-input examples/verified-feed-synthetic-demo/synthetic-INPUT.json \
+  --run examples/verified-feed-synthetic-demo/synthetic-run.json \
+  --rows examples/verified-feed-synthetic-demo/synthetic-rows.json \
+  --summary examples/verified-feed-synthetic-demo/synthetic-OUTPUT.json \
+  --out .delivery/synthetic-verified-feed \
+  --as-of 2026-09-30T13:00:00Z
+```
+
+Expected local results: two publishable fixture rows and one held `EXPIRED` fixture, in JSON and CSV. The explicit evaluation clock is part of the dated synthetic replay; it does not recheck today's availability. Nothing is sent to an external job board. [Fixture notice and expected counts](examples/verified-feed-synthetic-demo/NOTICE.md).
+
+### Use your own completed collection and verification
+
+1. Export your completed collection with [deliver_jobs.py](#deliver-only-new-jobs). Use a batch directory containing `READY`, and retain its metadata and all four JSON/CSV artifacts.
+2. Run `python3 verified_job_feed.py prepare --batch YOUR_READY_BATCH --out .delivery/verification-request --max-items 20`. Inspect `manifest.json` and `verifier-input.json`. Empty new-job batches return `SKIPPED_NO_NEW_JOBS` and produce no runnable verifier input. Larger batches retain deferred rows locally; use `--offset` and a separate request directory for the next slice.
+3. If you choose to make a paid verification run, submit the exact prepared JSON to the Verifier with a spending limit you set after checking current pricing. Keep its actual saved `INPUT`, run metadata, complete dataset JSON and `OUTPUT`. Neither helper starts this run. Editing settings or using an older run changes the request contract and causes merge to reject it.
+4. Merge those actual files:
+
+```bash
+python3 verified_job_feed.py merge \
+  --request .delivery/verification-request \
+  --verifier-input private-verification/INPUT.json \
+  --run private-verification/run.json \
+  --rows private-verification/rows.json \
+  --summary private-verification/OUTPUT.json \
+  --out .delivery/verified-feed
+```
+
+Use `publishable-jobs.json` or `.csv` only after reading the summary. Inspect `held-jobs.json` or `.csv` for missing, expired, ambiguous, unsafe, mismatched or review-required decisions. A charged/useful decision is not automatically a publishable application route. Safe LinkedIn Easy Apply routes can have no separate employer URL.
+
+Preparation checks READY metadata, counts, identity and artifact hashes. Merge checks the saved input's exact types and digest, job identity plus source index, source timestamps, run status, counts, supported decision flags and public HTTPS routes. Rows are not joined by dataset order. The original description stays on the local source row; only necessary job hints enter the prepared request. Scores and statuses remain source observations at `checkedAt`. Current availability stays unknown without another source check; missing jobs never imply closure. CSV formula protection is applied to the exported text cells. Keep these full local source and review files private.
+
+This prevents unchanged locally seen jobs from entering this prepared verification input; it does not refund collection charges or prevent charges if you manually repeat a paid verification run. No schedule, webhook, email or external job-board importer is installed.
+
+On October 1, 2026, local replay of the genuine September 30 batches prepared 10 new jobs from the first snapshot and skipped the second snapshot's zero new jobs. The older four-row verification request was correctly rejected as a different input. A newly matched live collection-to-verification run was not performed. Separately, 29 synthetic local tests and the free demo passed. [Dated proof and exact validation limits](verified-feed-verification-2026-10-01.json).
+
 ## Deliver only new jobs
 
 The September 30 owner integration used two genuine cloud runs of the same capped Berlin search, with 10 complete job rows each. The first local batch delivered 10 new jobs; the second delivered zero new jobs and retained all 10 seen identities. The second run's initial export stopped on a count disagreement; GET-only resumption of that same completed run passed the checks and exported the ready batch. No third scrape was started for recovery. [Source IDs, caps and validation boundaries](workflow-verification-2026-09-30.json), [the input](workflow-input.json) and [observed identities without full descriptions](workflow-observed-identities.json).
