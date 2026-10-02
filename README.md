@@ -8,6 +8,12 @@ Collect public LinkedIn jobs by keyword and location without a LinkedIn login. T
 
 The output includes title, company, location, posting date and full public description. It excludes recruiter profiles, applicant identities, emails and phone numbers. Missing source fields remain null.
 
+## Consumer QA fixes on October 2, 2026
+
+The offline delivery and verification helpers were hardened after five reproducible local failures: future source timestamps could poison seen history, a malformed LinkedIn job route could hide behind a numeric ID, a string billing flag could bypass useful-decision accounting, and symlink exports or corrupt READY markers could break recovery. Future row clocks over collection finish plus five seconds are rejected; present URLs must match a numeric LinkedIn job identity. Recovery now refuses unsafe files and false readiness before claiming a usable batch. Verification requires an actual boolean billing mode and consistent event counts.
+
+All 57 local tests passed: 23 delivery and 34 verification-handoff tests, with zero network connections. Replaying the genuine dated September 30 source batches still prepared 10 new jobs and skipped the second batch's zero new jobs; the invented demo still produced two publishable rows and one held row. [October 2 findings, code hashes and validation scope](qa-verification-2026-10-02.json). Earlier September 30 and October 1 evidence describes the code and observations from those dates; it is not a fresh live-source check. No Actor runtime, build, schema or price changed, and no new cloud run or external delivery was made.
+
 ## Verify only newly delivered jobs
 
 For job-board editors and recruitment teams, [verified_job_feed.py](verified_job_feed.py) connects this collector's incremental feed to the [Apply Link Verifier](https://apify.com/kamerozkan/linkedin-job-apply-link-verifier). It prepares only a READY batch's `new-jobs.json`, rather than sending the original collection dataset, including previously seen jobs, into another verification run. It then joins exported verification decisions back to the same job identities and produces separate publication and review files.

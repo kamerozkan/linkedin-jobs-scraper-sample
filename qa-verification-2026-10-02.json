@@ -1,0 +1,125 @@
+{
+  "recordedAt": "2026-10-02T07:42:17.963230+00:00",
+  "type": "offline-adversarial-consumer-QA",
+  "preChangeCommit": "890fa2550eb9880bf1d237cab2b4a358f44c40ef",
+  "findings": [
+    {
+      "id": "future-source-clock-poisons-seen",
+      "before": {
+        "newJobsAccepted": 1,
+        "laterValidRowsMarkedStale": 1
+      },
+      "after": "Reject source-row observation over collection finish plus five seconds; preserve later valid delivery. Future rows are held before verifier input preparation."
+    },
+    {
+      "id": "malformed-linkedin-route-hides-behind-id",
+      "before": {
+        "acceptedIdentity": "id:1000000001"
+      },
+      "after": "A present source URL must use a numeric LinkedIn job route, agree with the ID, and omit controls, credentials and ports."
+    },
+    {
+      "id": "billing-mode-type-bypasses-charge-audit",
+      "before": {
+        "malformedBillingModeAccepted": true,
+        "usefulDecisions": 1,
+        "reportedVerifiedJobEvents": 0,
+        "publishableJobs": 1
+      },
+      "after": "Require exact boolean billing mode, charge-count object and agreement with useful decisions; inactive PPE cannot report verified-job charges."
+    },
+    {
+      "id": "symlink-export-commits-unusable-batch-on-recovery",
+      "before": {
+        "recovered": true,
+        "newJobArtifactIsSymlink": true,
+        "readyMarkerCreated": true
+      },
+      "after": "Recovery rejects symlink exports before seen commit and resumes safely after regular-file repair."
+    },
+    {
+      "id": "corrupt-ready-marker-accepted-during-recovery",
+      "before": {
+        "persistedBatchStatus": "ready",
+        "wrongReadyMarkerPreserved": true
+      },
+      "after": "Reject corrupt or symlink READY marker instead of claiming readiness; a committed batch remains recoverable after marker repair."
+    }
+  ],
+  "tests": {
+    "passed": 57,
+    "total": 57,
+    "failures": 0,
+    "errors": 0,
+    "perModule": {
+      "test_deliver_jobs": 23,
+      "test_verified_job_feed": 34
+    },
+    "networkConnectCalls": 0
+  },
+  "realDatedReplay": [
+    {
+      "sourceBatchId": "9e29ef4e4ef6447383202adcb59720b9",
+      "sourceRunId": "03ScFqPhZjEpBvyMz",
+      "sourceBuildNumber": "0.1.3",
+      "sourceObservedAt": "2026-09-30T21:09:20.748000+00:00",
+      "status": "PREPARED",
+      "counts": {
+        "newSourceJobs": 10,
+        "eligibleJobs": 10,
+        "selectedJobs": 10,
+        "heldSourceJobs": 0,
+        "deferredJobs": 0
+      },
+      "sourceFilesUnchanged": true,
+      "runnableVerifierInputCreated": true
+    },
+    {
+      "sourceBatchId": "d5919fae34b848edb37fb64ff3cd6b41",
+      "sourceRunId": "6fzmTd1FZQ8HHHelE",
+      "sourceBuildNumber": "0.1.4",
+      "sourceObservedAt": "2026-09-30T21:25:17.452000+00:00",
+      "status": "SKIPPED_NO_NEW_JOBS",
+      "counts": {
+        "newSourceJobs": 0,
+        "eligibleJobs": 0,
+        "selectedJobs": 0,
+        "heldSourceJobs": 0,
+        "deferredJobs": 0
+      },
+      "sourceFilesUnchanged": true,
+      "runnableVerifierInputCreated": false
+    }
+  ],
+  "syntheticDemo": {
+    "allInputsInvented": true,
+    "counts": {
+      "selectedJobs": 3,
+      "verifierDatasetRows": 3,
+      "usefulDecisions": 3,
+      "publishableJobs": 2,
+      "heldJobs": 1,
+      "heldSourceJobsBeforeVerification": 0,
+      "deferredSourceJobs": 0
+    },
+    "status": "HANDOFF_COMPLETE"
+  },
+  "sourceHashes": {
+    "deliver_jobs.py": "6c2084d73fb2e7c72856c08f455c84005a6e58ca4454a1a63124b70fdd9192b7",
+    "verified_job_feed.py": "904fb3964ab29ad32bc34bd25427db2d961d7716072702893277d1f0b88101a1",
+    "test_deliver_jobs.py": "ef2d4b591730d689c6cdfaa1ddbf38bf019688c2a49b2735278efb1783fb85a5",
+    "test_verified_job_feed.py": "dd49b01aa01cdbffdaad9c5204ecf8b4b7d782d13d01c88feee2edb639b2a187"
+  },
+  "newCloudRuns": 0,
+  "newBuilds": 0,
+  "actorRuntimeChanged": false,
+  "actorPricingChanged": false,
+  "externalMessagesSent": 0,
+  "actualCustomerOutcomeVerified": false,
+  "limitations": [
+    "Tests are local fixtures and dated owner exports, not a fresh source check or new customer revenue.",
+    "No matched new live Jobs-to-Verifier run was opened.",
+    "Unsafe-URL checks are syntax/IP checks without DNS lookup, redirect fetching or current route verification.",
+    "The existing offline handoff records dated evidence and marks current availability unknown; it does not guarantee today's job availability."
+  ]
+}

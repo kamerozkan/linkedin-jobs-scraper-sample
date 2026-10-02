@@ -16,10 +16,10 @@ import tempfile
 import time
 import uuid
 from contextlib import contextmanager
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode, urlsplit, urlunsplit
+from urllib.parse import urlencode, urlsplit
 from urllib.request import Request, HTTPRedirectHandler, build_opener
 
 ROOT = Path(__file__).resolve().parent
@@ -118,30 +118,26 @@ def normalize_source(run, summary=None, mode="offline_snapshot"):
 def job_identity(row):
     raw_id = row.get("id")
     job_id = str(raw_id).strip() if isinstance(raw_id, (str, int)) and not isinstance(raw_id, bool) else ""
-    if job_id and not re.fullmatch(r"\d+", job_id):
+    if job_id and not re.fullmatch(r"\d{1,24}", job_id):
         raise DeliveryError("invalid_identity")
     raw_url = row.get("url")
-    canonical = None
     url_id = None
     if raw_url:
-        if not isinstance(raw_url, str):
+        if not isinstance(raw_url, str) or len(raw_url) > 4096 or re.search(r"[\x00-\x20\x7f\\]", raw_url):
             raise DeliveryError("invalid_identity")
         parts = urlsplit(raw_url)
         host = (parts.hostname or "").lower()
-        if (parts.scheme not in {"http", "https"} or parts.username or parts.password
+        if (parts.scheme not in {"http", "https"} or parts.username or parts.password or parts.port is not None
                 or not (host == "linkedin.com" or host.endswith(".linkedin.com"))
-                or not parts.path.startswith("/jobs/view/")):
+                or not re.fullmatch(r"/jobs/view/(?:[^/]*-)?\d{1,24}/?", parts.path)):
             raise DeliveryError("invalid_identity")
         path = parts.path.rstrip("/")
-        canonical = urlunsplit(("https", "www.linkedin.com", path, "", ""))
-        match = re.search(r"(?:/|-)(\d+)$", path)
+        match = re.search(r"(?:/|-)(\d{1,24})$", path)
         url_id = match.group(1) if match else None
     if job_id and url_id and job_id != url_id:
         raise DeliveryError("identity_mismatch")
     if job_id or url_id:
         return "id:" + (job_id or url_id)
-    if canonical and canonical.split("/jobs/view/", 1)[1]:
-        return "url:" + canonical
     raise DeliveryError("missing_identity")
 
 
@@ -154,6 +150,7 @@ def select_rows(rows, source):
     emitted = source.get("output", {}).get("rowsEmitted")
     if emitted is not None and len(rows) != emitted:
         raise DeliveryError("Snapshot does not match the source OUTPUT rowsEmitted count.")
+    source_finished = datetime.fromisoformat(timestamp(source.get("observedAt")))
     selected, rejected, conflicted = {}, {}, set()
     duplicates = 0
     for row in rows:
@@ -175,6 +172,8 @@ def select_rows(rows, source):
                 raise DeliveryError("empty_complete_description")
             key = job_identity(row)
             observed = timestamp(row.get("scrapedAt") or source["observedAt"])
+            if datetime.fromisoformat(observed) > source_finished + timedelta(seconds=5):
+                raise DeliveryError("observation_after_source_finish")
             fingerprint = digest({field: row.get(field) for field in CONTENT_FIELDS})
             candidate = {"key": key, "observedAt": observed, "fingerprint": fingerprint, "row": row}
             if key in selected:
@@ -190,7 +189,7 @@ def select_rows(rows, source):
             reason = str(sys.exc_info()[1]) if isinstance(sys.exc_info()[1], DeliveryError) else "invalid_record"
             if reason not in {"invalid_identity", "identity_mismatch", "missing_identity", "invalid_record",
                               "failed_record", "unexpected_fields", "missing_title", "details_unavailable",
-                              "invalid_detail_status", "empty_complete_description"}:
+                              "invalid_detail_status", "empty_complete_description", "observation_after_source_finish"}:
                 reason = "invalid_observation"
             rejected[reason] = rejected.get(reason, 0) + 1
     for key in conflicted:
@@ -261,8 +260,8 @@ def artifact_content(plan):
 def write_artifacts(plan):
     target = Path(plan["artifactDir"])
     files, metadata = artifact_content(plan)
-    if target.exists():
-        if not all((target / name).is_file() and (target / name).read_bytes() == body for name, body in files.items()):
+    if target.exists() or target.is_symlink():
+        if target.is_symlink() or not target.is_dir() or not all((target / name).is_file() and not (target / name).is_symlink() and (target / name).read_bytes() == body for name, body in files.items()):
             raise DeliveryError("Existing batch artifacts do not match prepared state; refusing overwrite.")
         return metadata
     target.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
@@ -305,6 +304,9 @@ def commit_seen(connection, plan):
 def mark_ready(connection, plan):
     target = Path(plan["artifactDir"])
     ready = target / "READY"
+    if ready.exists() or ready.is_symlink():
+        if ready.is_symlink() or not ready.is_file() or ready.read_bytes() != (plan["batchId"] + "\n").encode("ascii"):
+            raise DeliveryError("Existing batch READY marker is invalid; refusing false readiness.")
     if not ready.exists():
         with open(target / ".ready.tmp", "wb") as handle:
             handle.write((plan["batchId"] + "\n").encode("ascii"))

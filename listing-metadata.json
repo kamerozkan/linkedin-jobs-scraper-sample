@@ -30,5 +30,24 @@
     "publishesExternally": false,
     "actorRuntimeChanged": false,
     "actorPricingChanged": false
+  },
+  "consumerDeepQa": {
+    "checkedOn": "2026-10-02",
+    "evidence": "qa-verification-2026-10-02.json",
+    "localTestsPassed": 57,
+    "deliveryTests": 23,
+    "handoffTests": 34,
+    "demonstratedFailuresFixed": 5,
+    "networkConnections": 0,
+    "actorRuntimeChanged": false,
+    "actorBuildChanged": false,
+    "actorPricingChanged": false,
+    "freshSourceCheck": false,
+    "sourceHashes": {
+      "deliver_jobs.py": "6c2084d73fb2e7c72856c08f455c84005a6e58ca4454a1a63124b70fdd9192b7",
+      "verified_job_feed.py": "904fb3964ab29ad32bc34bd25427db2d961d7716072702893277d1f0b88101a1",
+      "test_deliver_jobs.py": "ef2d4b591730d689c6cdfaa1ddbf38bf019688c2a49b2735278efb1783fb85a5",
+      "test_verified_job_feed.py": "dd49b01aa01cdbffdaad9c5204ecf8b4b7d782d13d01c88feee2edb639b2a187"
+    }
   }
 }

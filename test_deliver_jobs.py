@@ -88,23 +88,54 @@ class DeliveryTests(unittest.TestCase):
     def test_optional_updates_and_old_snapshot_do_not_reverse_current_content(self):
         initial = job()
         changed = job(observed="2026-09-30T13:00:00Z", title="Synthetic changed role")
+        later_source = delivery.normalize_source(run_info("TestRun0002", "2026-09-30T13:00:00Z"))
         self.process([initial], updates=True)
-        result = self.process([changed], updates=True)
+        result = self.process([changed], later_source, updates=True)
         self.assertEqual(result["metadata"]["counts"]["newJobs"], 0)
         self.assertEqual(result["metadata"]["counts"]["updatedJobsExported"], 1)
         self.assertEqual(json.loads((Path(result["artifactDir"]) / "updated-jobs.json").read_text()), [changed])
         stale = self.process([initial], updates=True)
         self.assertEqual(stale["metadata"]["counts"]["staleObservations"], 1)
         self.assertEqual(stale["metadata"]["counts"]["updatedJobsExported"], 0)
-        self.assertEqual(self.process([changed], updates=True)["metadata"]["counts"]["updatedJobsExported"], 0)
+        self.assertEqual(self.process([changed], later_source, updates=True)["metadata"]["counts"]["updatedJobsExported"], 0)
 
     def test_volatile_source_fields_do_not_create_updates(self):
         row = job(applicantsCount=1, isNew=True, firstSeenAt="2026-09-30T12:00:00Z")
         self.process([row], updates=True)
         later = dict(row, applicantsCount=9, isNew=False, firstSeenAt="2026-09-30T13:00:00Z",
                      scrapedAt="2026-09-30T13:00:00Z", postedText="2 days ago")
-        result = self.process([later], updates=True)
+        later_source = delivery.normalize_source(run_info("TestRun0002", "2026-09-30T13:00:00Z"))
+        result = self.process([later], later_source, updates=True)
         self.assertEqual(result["metadata"]["counts"]["changedJobsObserved"], 0)
+
+    def test_future_observation_does_not_poison_seen_or_hide_later_valid_delivery(self):
+        future = self.process([job(observed="2030-01-01T00:00:00Z")])
+        self.assertEqual(future["metadata"]["counts"]["newJobs"], 0)
+        self.assertEqual(future["metadata"]["counts"]["rejectedReasons"], {"observation_after_source_finish": 1})
+        self.assertEqual(self.seen_count(), 0)
+        later_source = delivery.normalize_source(run_info("TestRun0002", "2026-09-30T13:00:00Z"))
+        legitimate = self.process([job(observed="2026-09-30T13:00:00Z")], later_source)
+        self.assertEqual(legitimate["metadata"]["counts"]["newJobs"], 1)
+        self.assertEqual(legitimate["metadata"]["counts"]["staleObservations"], 0)
+
+    def test_source_clock_tolerance_is_bounded_and_existing_seen_cannot_jump_forward(self):
+        self.assertEqual(self.process([job(observed="2026-09-30T12:00:05Z")])["metadata"]["counts"]["newJobs"], 1)
+        rejected = self.process([job(observed="2026-09-30T12:00:06Z", title="Synthetic future content")], updates=True)
+        self.assertEqual(rejected["metadata"]["counts"]["updatedJobsExported"], 0)
+        self.assertEqual(rejected["metadata"]["counts"]["rejectedReasons"], {"observation_after_source_finish": 1})
+        later_source = delivery.normalize_source(run_info("TestRun0002", "2026-09-30T12:01:00Z"))
+        updated = self.process([job(observed="2026-09-30T12:01:00Z", title="Synthetic valid updated content")], later_source, updates=True)
+        self.assertEqual(updated["metadata"]["counts"]["updatedJobsExported"], 1)
+
+    def test_present_malformed_job_route_cannot_hide_behind_numeric_id(self):
+        for url in ("https://www.linkedin.com/jobs/view/not-a-job", "https://www.linkedin.com/jobs/view/role-1000000001/extra", "https://www.linkedin.com:65535/jobs/view/1000000001", "https://www.linkedin.com/jobs/view/role\\-1000000001"):
+            with self.subTest(url=url):
+                result = self.process([job(url=url)])
+                self.assertEqual(result["metadata"]["counts"]["newJobs"], 0)
+                self.assertEqual(result["metadata"]["counts"]["rejectedReasons"], {"invalid_identity": 1})
+                self.assertEqual(self.seen_count(), 0)
+        valid = self.process([job(url="https://www.linkedin.com/jobs/view/synthetic-role-1000000001/?trackingId=synthetic#details")])
+        self.assertEqual(valid["metadata"]["counts"]["newJobs"], 1)
 
     def test_csv_formula_protection_does_not_change_original_json(self):
         row = job(title=' =HYPERLINK("https://example.invalid","click")', companyName="\t=cmd()",
@@ -182,6 +213,39 @@ class DeliveryTests(unittest.TestCase):
         with self.assertRaises(delivery.DeliveryError):
             self.process([job()])
         self.assertEqual(self.seen_count(), 0)
+
+    def test_same_bytes_symlink_export_blocks_recovery_before_seen_commit(self):
+        with patch.object(delivery, "commit_seen", side_effect=OSError("synthetic commit failure")):
+            with self.assertRaises(OSError):
+                self.process([job()])
+        target = next(self.output.glob("batch-*"))
+        original = (target / "new-jobs.json").read_bytes()
+        alternate = self.root / "same-bytes.json"
+        alternate.write_bytes(original)
+        (target / "new-jobs.json").unlink()
+        (target / "new-jobs.json").symlink_to(alternate)
+        with self.assertRaisesRegex(delivery.DeliveryError, "artifacts"):
+            self.process([job()])
+        self.assertEqual(self.seen_count(), 0)
+        self.assertFalse((target / "READY").exists())
+        (target / "new-jobs.json").unlink()
+        (target / "new-jobs.json").write_bytes(original)
+        self.assertTrue(self.process([job()])["recovered"])
+        self.assertEqual(self.seen_count(), 1)
+
+    def test_corrupt_ready_marker_cannot_complete_recovery_and_can_be_repaired(self):
+        with patch.object(delivery, "mark_ready", side_effect=OSError("synthetic readiness failure")):
+            with self.assertRaises(OSError):
+                self.process([job()])
+        target = next(self.output.glob("batch-*"))
+        (target / "READY").write_text("different-synthetic-batch\n")
+        with self.assertRaisesRegex(delivery.DeliveryError, "false readiness"):
+            self.process([job()])
+        with sqlite3.connect(self.state) as connection:
+            self.assertEqual(connection.execute("SELECT status FROM batches").fetchone()[0], "committed")
+        (target / "READY").unlink()
+        self.assertTrue(self.process([job()])["recovered"])
+        self.assertEqual(self.seen_count(), 1)
 
     def test_watchlists_have_independent_history(self):
         self.process([job()])

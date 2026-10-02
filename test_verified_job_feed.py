@@ -6,6 +6,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import verified_job_feed as feed
 
@@ -19,12 +20,12 @@ def job(job_id="1000000001", **changes):
             "scrapedAt": "2026-09-30T12:00:00Z", **changes}
 
 
-def source_batch(directory, rows, updates=None):
+def source_batch(directory, rows, updates=None, observed="2026-09-30T12:00:00Z"):
     directory.mkdir()
     files = {"new-jobs.json": feed.encoded(rows), "new-jobs.csv": b"synthetic,test\n",
              "updated-jobs.json": feed.encoded(updates or []), "updated-jobs.csv": b"synthetic,test\n"}
     metadata = {"formatVersion": 1, "batchId": "a" * 32, "watchlist": "synthetic-test",
-                "source": {"platformStatus": "SUCCEEDED", "runId": "SyntheticRun0001", "datasetId": "SyntheticDataset0001", "buildId": "SyntheticBuild0001", "buildNumber": "0.1.4", "observedAt": "2026-09-30T12:00:00Z", "searchCoverage": [{"complete": False, "stopReason": "limit_reached"}]},
+                "source": {"platformStatus": "SUCCEEDED", "runId": "SyntheticRun0001", "datasetId": "SyntheticDataset0001", "buildId": "SyntheticBuild0001", "buildNumber": "0.1.4", "observedAt": observed, "searchCoverage": [{"complete": False, "stopReason": "limit_reached"}]},
                 "counts": {"newJobs": len(rows)}, "artifacts": {name: {"sha256": feed.sha(raw), "bytes": len(raw)} for name, raw in files.items()}}
     for name, raw in files.items():
         (directory / name).write_bytes(raw)
@@ -221,11 +222,26 @@ class FeedTests(unittest.TestCase):
                 self.merge(run, bad, summary)
 
     def test_decision_before_source_observation_is_held(self):
-        self.prepare([job(scrapedAt="2026-09-30T12:01:40Z")])
+        source_batch(self.batch, [job(scrapedAt="2026-09-30T12:01:40Z")], observed="2026-09-30T12:01:40Z")
+        feed.prepare(self.batch, self.request)
         result = self.merge()
         self.assertEqual(result["status"], "HANDOFF_PARTIAL")
         held = feed.read_json(self.output / "held-jobs.json")
         self.assertEqual(held[0]["reason"], "VERIFICATION_PREDATES_SOURCE_OBSERVATION")
+
+    def test_future_source_observation_is_held_before_runnable_input_is_created(self):
+        result = self.prepare([job(scrapedAt="2030-01-01T00:00:00Z")])
+        self.assertEqual(result["status"], "SKIPPED_NO_ELIGIBLE_JOBS")
+        self.assertFalse((self.request / "verifier-input.json").exists())
+        held = feed.read_json(self.request / "held-source-jobs.json")
+        self.assertEqual(held[0]["reason"], "source_observation_after_collection_finish")
+        self.assertEqual(held[0]["sourceRow"]["scrapedAt"], "2030-01-01T00:00:00Z")
+
+    def test_source_clock_tolerance_is_bounded_without_discarding_valid_neighbors(self):
+        result = self.prepare([job(scrapedAt="2026-09-30T12:00:05Z"), job("1000000002", scrapedAt="2026-09-30T12:00:06Z")])
+        self.assertEqual(result["counts"]["selectedJobs"], 1)
+        self.assertEqual(result["counts"]["heldSourceJobs"], 1)
+        self.assertEqual(self.data()[1]["rows"][0]["jobId"], "1000000001")
 
     def test_verification_must_not_predate_collection_finish_even_with_older_row_scrape(self):
         self.prepare([job(scrapedAt="2026-09-30T10:00:00Z")])
@@ -282,6 +298,34 @@ class FeedTests(unittest.TestCase):
         with self.assertRaisesRegex(feed.FeedError, "event count"):
             self.merge({**run, "chargedEventCounts": {"verified-job": 0}}, decisions, summary)
 
+    def test_billing_mode_requires_exact_boolean_before_charge_consistency_gate(self):
+        self.prepare()
+        selected, _ = self.data()
+        run, decisions, summary = exported_run(selected)
+        run["chargedEventCounts"]["verified-job"] = 0
+        for value in ("true", 1, 0, None):
+            bad = copy.deepcopy(summary)
+            bad["billing"]["payPerEventActive"] = value
+            with self.subTest(value=value), self.assertRaisesRegex(feed.FeedError, "actual boolean"):
+                self.merge(run, decisions, bad)
+            self.assertFalse(self.output.exists())
+        inactive = copy.deepcopy(summary)
+        inactive["billing"]["payPerEventActive"] = False
+        self.assertEqual(self.merge(run, decisions, inactive)["counts"]["publishableJobs"], 1)
+
+    def test_malformed_charge_object_and_inactive_billing_with_positive_charge_are_rejected(self):
+        self.prepare()
+        selected, _ = self.data()
+        run, decisions, summary = exported_run(selected)
+        for value in (["synthetic-invalid-object"], "synthetic-invalid-object", True):
+            with self.subTest(value=value), self.assertRaisesRegex(feed.FeedError, "must be an object"):
+                self.merge({**run, "chargedEventCounts": value}, decisions, summary)
+        inactive = copy.deepcopy(summary)
+        inactive["billing"]["payPerEventActive"] = False
+        with self.assertRaisesRegex(feed.FeedError, "inactive"):
+            self.merge(run, decisions, inactive)
+        self.assertFalse(self.output.exists())
+
     def test_json_keeps_source_text_csv_protects_formula_and_no_old_flags_survive(self):
         self.prepare([job(title="\ufeff =SUM(1,2)", officialApplyUrl="https://old.synthetic-example.invalid/old", safeToPublish=True, jobStatus="OLD_HINT")])
         self.merge()
@@ -311,6 +355,17 @@ class FeedTests(unittest.TestCase):
         with self.assertRaisesRegex(feed.FeedError, "overwrite"):
             self.merge()
         self.assertEqual((self.output / "unrelated.txt").read_text(), "preserve")
+
+    def test_atomic_handoff_rename_failure_leaves_source_request_and_no_partial_output(self):
+        self.prepare()
+        before = {p.name: p.read_bytes() for p in self.request.iterdir()}
+        with patch.object(feed.os, "rename", side_effect=OSError("synthetic rename failure")):
+            with self.assertRaises(OSError):
+                self.merge()
+        self.assertFalse(self.output.exists())
+        self.assertEqual(list(self.root.glob(".verified-feed-*")), [])
+        self.assertEqual(before, {p.name: p.read_bytes() for p in self.request.iterdir()})
+        self.assertEqual(self.merge()["counts"]["publishableJobs"], 1)
 
     def test_saved_input_default_population_is_equivalent_without_altering_rows(self):
         self.prepare()

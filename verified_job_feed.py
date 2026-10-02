@@ -180,7 +180,11 @@ def project_job(row, source):
         raise FeedError("source_details_unavailable_or_failed")
     if row.get("detailStatus") == "complete" and not any(isinstance(row.get(k), str) and row[k].strip() for k in ("descriptionText", "descriptionHtml")):
         raise FeedError("source_complete_description_missing")
-    observed = max(when(row.get("scrapedAt") or source["observedAt"], "Job source observation"), when(source["observedAt"], "Source observation"))
+    source_finished = when(source["observedAt"], "Source observation")
+    row_observed = when(row.get("scrapedAt") or source["observedAt"], "Job source observation")
+    if row_observed > source_finished + timedelta(seconds=5):
+        raise FeedError("source_observation_after_collection_finish")
+    observed = max(row_observed, source_finished)
     result = {"jobId": job_id, "jobUrl": "https://www.linkedin.com/jobs/view/" + job_id,
               "jobTitle": row["title"], "companyName": row["companyName"], "location": row["location"]}
     warnings = []
@@ -394,9 +398,18 @@ def merge(request_dir, saved_input, run, rows, summary, output_dir, as_of=None):
     billing = summary.get("billing")
     if not isinstance(billing, dict) or billing.get("unresolvedRowsCharged") is not False or billing.get("invalidOrDuplicateRowsCharged") is not False:
         raise FeedError("Verifier OUTPUT does not confirm unbillable diagnostic protection.")
-    charged = (run.get("chargedEventCounts") or {}).get("verified-job")
-    if billing.get("payPerEventActive") is True and (type(charged) is not int or charged != useful):
+    if type(billing.get("payPerEventActive")) is not bool:
+        raise FeedError("Verifier OUTPUT billing mode must be an actual boolean.")
+    charges = run.get("chargedEventCounts")
+    if charges is None:
+        charges = {}
+    if not isinstance(charges, dict):
+        raise FeedError("Verifier chargedEventCounts must be an object.")
+    charged = charges.get("verified-job")
+    if billing["payPerEventActive"] and (type(charged) is not int or charged != useful):
         raise FeedError("Verified-job event count does not match useful decisions.")
+    if not billing["payPerEventActive"] and charged is not None and (type(charged) is not int or charged != 0):
+        raise FeedError("Verified-job event charges conflict with inactive pay-per-event billing.")
     input_hashes = {"preparedVerifierInput": digest(verifier_input), "savedVerifierInput": digest(normalized_verifier_input(saved_input)), "verifierRun": digest(run), "verifierRows": digest(rows), "verifierOutput": digest(summary)}
     # An identical retry preserves its first evaluation timestamp. Reuse is
     # allowed only after validating this invocation and all prior artifact hashes.
