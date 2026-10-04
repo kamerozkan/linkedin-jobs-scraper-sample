@@ -1,0 +1,13 @@
+{
+  "keywords": [
+    "software engineer"
+  ],
+  "locations": [
+    "Berlin, Germany"
+  ],
+  "datePosted": "pastWeek",
+  "maxJobsPerSearch": 10,
+  "includeJobDetails": true,
+  "verifyApplyLinks": false,
+  "maxConcurrency": 1
+}

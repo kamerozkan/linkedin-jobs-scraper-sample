@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-04",
+  "actor": "kamerozkan/linkedin-jobs-scraper",
+  "actorId": "7K6PDmgKj6nvwwJPi",
+  "scope": "Saved API exampleRunInput metadata and matching public JSON file only",
+  "savedAtUtc": "2026-10-03T23:49:45.297697+00:00",
+  "observedBuildNumber": "0.1.4",
+  "exampleFile": "example_run_input.json",
+  "exampleBodySha256": "6076c3cade5a5442805d6e3363ade9b644e5bf5d55873a5b243ff88ed4db242e",
+  "savedReadbackMatches": true,
+  "contentType": "application/json",
+  "schemaValidation": {
+    "jsonschemaVersion": "4.26.0",
+    "validator": "Draft202012Validator",
+    "schemaSha256": "a245680a208d0379e5277cc9cc5f51b583e6c65c738e7fbae765acee0241c387",
+    "schemaReferenceCount": 0,
+    "requiredTypeEnumRangeAdditionalPropertiesAndNestedConstraintsValidated": true,
+    "formatCheckerEnabled": true,
+    "beforeErrors": [
+      {
+        "path": [],
+        "rule": "additionalProperties"
+      }
+    ],
+    "afterErrors": []
+  },
+  "sourceProvenance": {
+    "kind": "Already-public deployed input-schema keywords/locations.prefill first items",
+    "searches": 1,
+    "jobLimit": 10,
+    "verifierDisabled": true,
+    "encryptedOrCustomerTaskCopied": false
+  },
+  "publicFixtureRetrievals": [],
+  "protectedMetadataUnchanged": true,
+  "actorRuntimeChanged": false,
+  "actorBuildChanged": false,
+  "actorInputSchemaChanged": false,
+  "pricingChanged": false,
+  "newActorRuns": 0,
+  "freshUsefulOutputVerified": false,
+  "historicalOutputsRegenerated": false,
+  "limitations": [
+    "Template JSON/schema validation is not Actor output or live source acceptance.",
+    "Workload limits do not cap all account/compute/proxy costs; review pricing and spending limits before starting a run.",
+    "Existing dated output samples retain their original evidence class and collection times."
+  ]
+}

@@ -8,6 +8,19 @@ Collect public LinkedIn jobs by keyword and location without a LinkedIn login. T
 
 The output includes title, company, location, posting date and full public description. It excludes recruiter profiles, applicant identities, emails and phone numbers. Missing source fields remain null.
 
+## Saved API starter on October 4, 2026
+
+[example_run_input.json](example_run_input.json) now matches the Actor's saved API example body: one Berlin software-engineer search, at most ten jobs, one concurrent search and apply-link verification disabled. It replaces the unrelated `helloWorld` API placeholder. The deployed input schema accepted it and the saved body was read back unchanged; this was a metadata repair, not a new scrape. [Exact validation scope](maintenance-verification-2026-10-04.json).
+
+To explicitly start a potentially billable run with this starter, set `APIFY_TOKEN` in your environment and use the existing client examples:
+
+```bash
+python run_scraper.py example_run_input.json
+node run_scraper.mjs example_run_input.json
+```
+
+Each command starts a separate run; choose one. Both existing clients set a $0.50 paid-event limit and a 300-second timeout. Ten requested jobs is a workload cap, not proof of complete coverage or a cap on every account cost. No command was executed during this metadata repair. Earlier owner outputs keep their September 30 provenance.
+
 ## Consumer QA fixes on October 2, 2026
 
 The offline delivery and verification helpers were hardened after five reproducible local failures: future source timestamps could poison seen history, a malformed LinkedIn job route could hide behind a numeric ID, a string billing flag could bypass useful-decision accounting, and symlink exports or corrupt READY markers could break recovery. Future row clocks over collection finish plus five seconds are rejected; present URLs must match a numeric LinkedIn job identity. Recovery now refuses unsafe files and false readiness before claiming a usable batch. Verification requires an actual boolean billing mode and consistent event counts.

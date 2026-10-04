@@ -41,3 +41,9 @@ The separate public proof records local replay of genuine September 30 collectio
 ## Consumer helper repairs on October 2, 2026
 
 The local delivery and verification helpers and their regression tests changed after demonstrated identity, observation-clock, billing-type and recovery failures. `qa-verification-2026-10-02.json` contains redacted before/after counts, local test results, current helper hashes and replay provenance. The old dated evidence files are retained as historical snapshots rather than relabeled. No newly collected jobs, customer datasets, account finance or private files are published in this repair. The historical owner batches and invented fixture are separate from fresh source availability, customer adoption or realized revenue. Actor runtime/build/schema/pricing and external delivery are unchanged.
+
+## Maintenance evidence on October 4, 2026
+
+[example_run_input.json](example_run_input.json) is the exact public JSON body saved and read back as the Actor's API `exampleRunInput`, replacing an unrelated `helloWorld` placeholder. [Verification evidence](maintenance-verification-2026-10-04.json) records deployed-schema validation and saved metadata parity. Its values come from already-public input-schema prefills, not a private customer Task.
+
+This change did not start an Actor run or change runtime/build/schema/pricing. JSON/schema validity and a retrieved public fixture do not establish successful processing, current source availability or useful output. Existing outputs remain unchanged with their original dates and evidence class. Set your own run spending limit before execution; workload limits are not a hard financial cap. Keep tokens in your environment and Authorization header, and keep customer files out of this repository.

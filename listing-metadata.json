@@ -8,7 +8,7 @@
   "isPublic": true,
   "url": "https://apify.com/kamerozkan/linkedin-jobs-scraper",
   "checkedAt": "2026-09-30",
-  "changeScope": "listing metadata and sample documentation only",
+  "changeScope": "Saved API exampleRunInput and matching sample documentation; runtime/build/schema/pricing unchanged",
   "runtimeChanged": false,
   "schemasChanged": false,
   "examplesRegenerated": false,
@@ -49,5 +49,18 @@
       "test_deliver_jobs.py": "ef2d4b591730d689c6cdfaa1ddbf38bf019688c2a49b2735278efb1783fb85a5",
       "test_verified_job_feed.py": "dd49b01aa01cdbffdaad9c5204ecf8b4b7d782d13d01c88feee2edb639b2a187"
     }
+  },
+  "maintenanceVerifiedAt": "2026-10-04",
+  "apiExampleMaintenance": {
+    "date": "2026-10-04",
+    "evidence": "maintenance-verification-2026-10-04.json",
+    "inputFile": "example_run_input.json",
+    "savedReadbackMatches": true,
+    "schemaValidated": true,
+    "newActorRuns": 0,
+    "freshUsefulOutputVerified": false,
+    "runtimeChanged": false,
+    "pricingChanged": false,
+    "historicalExamplesRegenerated": false
   }
 }
